@@ -1,0 +1,511 @@
+:root {
+  color-scheme: light dark;
+
+  --bg: #f2f1ee;
+  --panel: #faf9f7;
+  --bar: #ebe9e5;
+  --text: #21211e;
+  --muted: #74746c;
+  --border: #dcdad4;
+  --hover: rgba(0, 0, 0, 0.055);
+  --active: rgba(0, 0, 0, 0.1);
+  --danger: #b3261e;
+  --toast-bg: #2a2a27;
+  --toast-fg: #f5f4f1;
+  --toolbar-height: 44px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a19;
+    --panel: #232322;
+    --bar: #232322;
+    --text: #e9e8e3;
+    --muted: #8a8a82;
+    --border: #34342f;
+    --hover: rgba(255, 255, 255, 0.07);
+    --active: rgba(255, 255, 255, 0.11);
+    --danger: #ff6f61;
+    --toast-bg: #e9e8e3;
+    --toast-fg: #1a1a19;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button:disabled {
+  opacity: 0.35;
+}
+
+svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ---------------------------------------------------------------- toolbar */
+
+#toolbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: var(--toolbar-height);
+  padding: 0 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bar);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.mac #toolbar {
+  padding-left: 84px;
+}
+
+.cluster {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.drag-region {
+  flex: 1;
+  align-self: stretch;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: var(--text);
+}
+
+.icon-btn.small {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-btn.small svg {
+  width: 14px;
+  height: 14px;
+}
+
+.icon-btn:hover:not(:disabled),
+.zoom-value:hover:not(:disabled),
+.text-btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.icon-btn:active:not(:disabled),
+.zoom-value:active:not(:disabled),
+.text-btn:active:not(:disabled) {
+  background: var(--active);
+}
+
+.icon-btn[aria-pressed="true"] {
+  background: var(--hover);
+}
+
+.text-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+}
+
+#btn-zoom-out,
+#btn-zoom-in {
+  width: 26px;
+  height: 26px;
+}
+
+.zoom-value {
+  min-width: 46px;
+  height: 24px;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-control {
+  padding-left: 4px;
+}
+
+#page-input {
+  width: 34px;
+  height: 24px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  outline: none;
+}
+
+#page-input:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+#page-input:focus {
+  background: var(--panel);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.page-total {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ main */
+
+#main {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* --------------------------------------------------------------- sidebar */
+
+#sidebar {
+  flex: none;
+  width: 244px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 4px 8px 24px;
+  border-right: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.sidebar-title {
+  padding: 10px 10px 8px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.outline-link {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 12.5px;
+  line-height: 1.4;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outline-link:hover {
+  background: var(--hover);
+}
+
+.outline-empty {
+  margin: 0;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* ---------------------------------------------------------------- viewer */
+
+#viewer-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+#viewer-container {
+  --page-margin: 14px auto;
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: var(--bg);
+}
+
+/* PDF.js sizes the page element with `width: <scale> * pageWidth`, which
+   assumes a content box. The 9px transparent page border must therefore not
+   eat into that width, otherwise the canvas is squeezed while the text layer
+   keeps the unsqueezed scale and the search highlights drift off the text. */
+.pdfViewer .page {
+  box-sizing: content-box;
+}
+
+.pdfViewer .canvasWrapper {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 10px 26px rgba(0, 0, 0, 0.07);
+}
+
+@media (prefers-color-scheme: dark) {
+  .pdfViewer .canvasWrapper {
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.5),
+      0 2px 6px rgba(0, 0, 0, 0.45),
+      0 12px 30px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.textLayer .highlight {
+  --highlight-bg-color: rgba(255, 208, 0, 0.4);
+  --highlight-selected-bg-color: rgba(255, 145, 0, 0.55);
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------ empty state */
+
+#empty {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg);
+}
+
+.empty-art {
+  width: 54px;
+  height: 54px;
+  color: var(--muted);
+  stroke-width: 1.2;
+  opacity: 0.45;
+}
+
+.empty-title {
+  margin: 2px 0 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.primary-btn {
+  height: 29px;
+  padding: 0 15px;
+  border-radius: 7px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 12.5px;
+}
+
+.primary-btn:hover {
+  opacity: 0.88;
+}
+
+/* ---------------------------------------------------------------- findbar */
+
+#findbar {
+  position: absolute;
+  z-index: 20;
+  top: 10px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: min(330px, calc(100% - 28px));
+  padding: 4px 5px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 10px 30px rgba(0, 0, 0, 0.14);
+}
+
+#find-input {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  padding: 0 6px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  outline: none;
+}
+
+#find-input::placeholder {
+  color: var(--muted);
+}
+
+.find-count {
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.find-count[data-state="none"] {
+  color: var(--danger);
+}
+
+.find-sep {
+  width: 1px;
+  height: 16px;
+  margin: 0 3px;
+  background: var(--border);
+}
+
+/* ------------------------------------------------------------------ misc */
+
+#drop-overlay {
+  position: absolute;
+  z-index: 40;
+  inset: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--muted);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+#toast {
+  position: absolute;
+  z-index: 30;
+  bottom: 18px;
+  left: 50%;
+  max-width: min(520px, calc(100% - 32px));
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  font-size: 12px;
+  transform: translateX(-50%);
+}
+
+#print-container {
+  display: none;
+}
+
+/* ----------------------------------------------------------------- print */
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+
+  #app {
+    display: block;
+    height: auto;
+  }
+
+  #main {
+    display: block;
+  }
+
+  #toolbar,
+  #sidebar,
+  #empty,
+  #findbar,
+  #toast,
+  #drop-overlay,
+  #viewer-wrap {
+    display: none !important;
+  }
+
+  #print-container {
+    display: block;
+  }
+
+  .print-page {
+    display: grid;
+    place-items: center;
+    height: 100vh;
+    overflow: hidden;
+    break-after: page;
+  }
+
+  .print-page:last-child {
+    break-after: auto;
+  }
+
+  .print-page canvas {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100vh;
+  }
+}
