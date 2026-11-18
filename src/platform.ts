@@ -1,8 +1,9 @@
+import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { open } from "@tauri-apps/plugin-dialog";
+import { message, open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 /** True inside the Tauri webview; false when running in a plain browser (dev). */
@@ -106,6 +107,18 @@ export async function onMenu(handler: (command: string) => void): Promise<void> 
 
 export async function setWindowTitle(title: string): Promise<void> {
   if (isTauri) await getCurrentWindow().setTitle(title);
+}
+
+/** Show the app version on demand, via a native dialog in Tauri. */
+export async function showAbout(): Promise<void> {
+  // getVersion() reads the version from tauri.conf.json, keeping a single source.
+  const version = isTauri ? await getVersion() : "dev";
+  const text = `Simple PDF Viewer\nVersion ${version}`;
+  if (isTauri) {
+    await message(text, { title: "About Simple PDF Viewer", kind: "info" });
+  } else {
+    window.alert(text);
+  }
 }
 
 export async function openExternal(url: string): Promise<void> {

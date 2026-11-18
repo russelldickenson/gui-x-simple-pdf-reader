@@ -32,6 +32,7 @@ fn build_menu<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
     let actual_size = MenuItemBuilder::with_id("actual-size", "Actual Size")
         .accelerator("CmdOrCtrl+0")
         .build(app)?;
+    let about = MenuItemBuilder::with_id("about", "About Simple PDF Viewer").build(app)?;
 
     let file = SubmenuBuilder::new(app, "File")
         .item(&open)
@@ -66,6 +67,10 @@ fn build_menu<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         .item(&PredefinedMenuItem::maximize(app, None)?)
         .build()?;
 
+    // macOS puts About in the application menu; other platforms get a Help menu.
+    #[cfg(not(target_os = "macos"))]
+    let help = SubmenuBuilder::new(app, "Help").item(&about).build()?;
+
     let menu = MenuBuilder::new(app);
 
     // On macOS the first submenu of the main menu becomes the application
@@ -74,7 +79,7 @@ fn build_menu<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
     #[cfg(target_os = "macos")]
     let menu = {
         let app_menu = SubmenuBuilder::new(app, "Simple PDF Viewer")
-            .item(&PredefinedMenuItem::about(app, Some("Simple PDF Viewer"), None)?)
+            .item(&about)
             .separator()
             .item(&PredefinedMenuItem::services(app, None)?)
             .separator()
@@ -87,7 +92,12 @@ fn build_menu<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         menu.item(&app_menu)
     };
 
-    menu.items(&[&file, &edit, &view, &window]).build()
+    #[cfg(target_os = "macos")]
+    let menu = menu.items(&[&file, &edit, &view, &window]);
+    #[cfg(not(target_os = "macos"))]
+    let menu = menu.items(&[&file, &edit, &view, &window, &help]);
+
+    menu.build()
 }
 
 pub fn run() {

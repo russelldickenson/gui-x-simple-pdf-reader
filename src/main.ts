@@ -323,6 +323,9 @@ void platform.onMenu((command) => {
     case "actual-size":
       reader.actualSize();
       break;
+    case "about":
+      void platform.showAbout();
+      break;
   }
 });
 

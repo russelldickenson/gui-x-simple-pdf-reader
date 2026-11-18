@@ -33,6 +33,8 @@ npm run tauri dev
 
 which is `npm run tauri build` plus a check that dependencies are installed and a listing of the resulting bundles. Artifacts land in `src-tauri/target/release/bundle/`: a `.dmg`/`.app` on macOS, an `.msi` and `.exe` installer on Windows. Cross-compiling for Windows from macOS is possible with `--target x86_64-pc-windows-msvc` if the MSVC toolchain and NSIS/WiX are set up, but building on Windows is simpler.
 
+The version is defined once, in `src-tauri/Cargo.toml`. Tauri derives the bundle version and the in-app About dialog from it, so neither `package.json` nor `tauri.conf.json` carries a version field.
+
 Unsigned builds trigger Gatekeeper ("damaged"/"unidentified developer") on macOS and SmartScreen on Windows. Signing and notarization are out of scope here; see Tauri's code-signing guide when you get there.
 
 ### Bundle size
