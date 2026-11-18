@@ -1,22 +1,31 @@
-# Simple PDF Viewer
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Simple PDF Viewer — a quiet, offline PDF reader for macOS and Windows">
+</p>
 
-A small, quiet PDF reader for macOS and Windows, built with Tauri 2 and PDF.js.
+<p align="center">
+  <img src="./assets/readme/screenshot.png" width="100%" alt="Simple PDF Viewer with a document open, showing the contents sidebar and toolbar">
+</p>
 
-- Reads the document in one continuous, scrollable pane.
+Simple PDF Viewer is a small, quiet PDF reader for macOS and Windows. It renders documents locally with PDF.js inside a native Tauri window — no account, no sync, no network calls.
+
+## What it does
+
+- Reads a document in one continuous, scrollable pane.
 - Table of contents in a left sidebar, hidden until toggled.
-- Find bar with match highlighting, match count and next/previous navigation.
-- Print, with pages laid out at their physical size.
+- Find bar with match highlighting, match count, and next/previous navigation.
+- Prints with pages laid out at their physical size.
 - Opens files from the toolbar, <kbd>⌘O</kbd> / <kbd>Ctrl</kbd>+<kbd>O</kbd>, or by dropping them onto the window.
 - Follows the system light/dark appearance.
-
-Everything runs locally: no network calls, no telemetry.
+- Shows its version in the About menu on both platforms.
 
 ## Requirements
 
 - Node 20+ and Rust (stable) to build.
 - macOS 13+ (Tauri needs WKWebView; `window.print()` needs macOS 14+) or Windows 10/11 with the WebView2 runtime, which ships with Windows 11 and current Windows 10.
 
-## Run
+## Get started
+
+Run the app from source:
 
 ```bash
 npm install
@@ -25,19 +34,19 @@ npm run tauri dev
 
 `npm run dev` alone serves the frontend in a browser, where the file picker falls back to a plain `<input type="file">`. Useful for UI work; the native menu and drag-and-drop are Tauri-only.
 
-## Build
+Build a release bundle:
 
 ```bash
 ./build.sh
 ```
 
-which is `npm run tauri build` plus a check that dependencies are installed and a listing of the resulting bundles. Artifacts land in `src-tauri/target/release/bundle/`: a `.dmg`/`.app` on macOS, an `.msi` and `.exe` installer on Windows. Cross-compiling for Windows from macOS is possible with `--target x86_64-pc-windows-msvc` if the MSVC toolchain and NSIS/WiX are set up, but building on Windows is simpler.
-
-The version is defined once, in `src-tauri/Cargo.toml`. Tauri derives the bundle version and the in-app About dialog from it, so neither `package.json` nor `tauri.conf.json` carries a version field.
+That is `npm run tauri build` plus a check that dependencies are installed and a listing of the bundles. Artifacts land in `src-tauri/target/release/bundle/`: a `.dmg`/`.app` on macOS, an `.msi` and `.exe` on Windows. Cross-compiling for Windows from macOS is possible with `--target x86_64-pc-windows-msvc` if the MSVC toolchain and NSIS/WiX are set up, but building on Windows is simpler.
 
 Unsigned builds trigger Gatekeeper ("damaged"/"unidentified developer") on macOS and SmartScreen on Windows. Signing and notarization are out of scope here; see Tauri's code-signing guide when you get there.
 
-### Bundle size
+The version is defined once, in `src-tauri/Cargo.toml`. Tauri derives the bundle version and the in-app About dialog from it, so neither `package.json` nor `tauri.conf.json` carries a version field.
+
+## Why the bundle is small
 
 A release build is about 5.4 MB on macOS (3.6 MB as a .dmg). Three things keep it there:
 
@@ -45,9 +54,9 @@ A release build is about 5.4 MB on macOS (3.6 MB as a .dmg). Three things keep i
 - `vite.config.ts` copies only the PDF.js assets that are actually used: the CMaps, the standard fonts, and the three wasm modules for JPEG2000, JBIG2 and ICC profiles. PDF.js 6 no longer runs JavaScript from PDFs, so its `quickjs-eval` module is left out, as are the "no wasm" fallbacks.
 - The frontend is embedded in the binary and compressed by Tauri, so the .dmg is noticeably smaller than the .app.
 
-Two further cuts are possible if you want them: dropping `standard_fonts` (1 MB, macOS and Windows supply the standard 14 themselves, but symbol fonts can then fall back to a generic face) and dropping the wasm modules entirely (0.5 MB, at the cost of JPEG2000 and JBIG2 images). The CMaps (1.6 MB) are what make legacy CJK encodings work and are worth keeping.
+Two further cuts are possible: dropping `standard_fonts` (1 MB; macOS and Windows supply the standard 14 themselves, but symbol fonts can then fall back to a generic face) and dropping the wasm modules entirely (0.5 MB, at the cost of JPEG2000 and JBIG2 images). The CMaps (1.6 MB) are what make legacy CJK encodings work and are worth keeping.
 
-## Layout
+## Project layout
 
 ```
 index.html            markup for the toolbar, sidebar, viewer, find bar
@@ -59,7 +68,8 @@ src/pdf.ts            PDF.js bootstrap, incl. load order for the viewer bundle
 src-tauri/src/lib.rs  open-file command, application menu
 ```
 
-### Notes on the implementation
+<details>
+<summary>Implementation notes</summary>
 
 - **Rendering** uses `pdfjs-dist`'s prebuilt web viewer (`PDFViewer`, `PDFFindController`) with a hand-written chrome. That is why `src/pdf.ts` sets `globalThis.pdfjsLib` before dynamically importing `web/pdf_viewer.mjs`: the viewer bundle reads its API off the global, and static import order is not something bundlers guarantee.
 - **Search** dispatches PDF.js `find`/`again` events and listens for `updatefindmatchescount`/`updatefindcontrolstate` to fill the count. Highlights come from the text layer.
@@ -71,6 +81,8 @@ src-tauri/src/lib.rs  open-file command, application menu
 - `vite.config.ts` pins the dev server to `127.0.0.1`. Vite listens on IPv6 only by default, and WKWebView resolves `localhost` to IPv4, which leaves the window blank in development.
 - `styles.css` keeps `box-sizing: content-box` on `.pdfViewer .page`. PDF.js sizes the page with `width: <scale> * pageWidth`, which assumes a content box; with the usual `border-box` reset the 9px transparent page border would eat into that width, squeezing the canvas while the text layer keeps the unsqueezed scale, and the search highlights would drift off the text by ~1.5%.
 - `pdfjs-dist/web/pdf_viewer.css` is imported before `styles.css`. PDF.js compiles `.highlight` under `.textLayer`, the same specificity as the overrides in `styles.css`, so the later stylesheet wins.
+
+</details>
 
 ## Not implemented
 

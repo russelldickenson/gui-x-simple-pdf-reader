@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Simple PDF Viewer</title>
+  <desc id="desc">A quiet, offline PDF reader for macOS and Windows, shown with a document page and a highlighted search match.</desc>
+
+  <rect width="1200" height="360" rx="24" fill="#f2f1ee"/>
+
+  <g id="title-block" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <text x="64" y="82" fill="#74746c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20" letter-spacing="2">TAURI 2  ·  PDF.JS</text>
+    <text x="64" y="158" fill="#21211e" font-size="60" font-weight="700" letter-spacing="-1">Simple PDF Viewer</text>
+    <text x="64" y="208" fill="#21211e" font-size="29" font-weight="400">A quiet way to read PDFs.</text>
+    <text x="64" y="244" fill="#74746c" font-size="23" font-weight="400">Open a file. Scroll. Find. Print.</text>
+    <text x="64" y="298" fill="#74746c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">macOS + Windows   ·   offline   ·   ~3.6 MB DMG</text>
+  </g>
+
+  <g id="project-proof">
+    <rect x="791" y="75" width="284" height="216" rx="10" fill="#ebe9e5" stroke="#dcdad4" stroke-width="1.6"/>
+    <path d="M812 104 H1052 L1072 124 V292 Q1072 300 1064 300 H812 Q804 300 804 292 V112 Q804 104 812 104 Z" fill="#faf9f7" stroke="#dcdad4" stroke-width="1.6"/>
+    <path d="M1052 104 V124 H1072 Z" fill="#ebe9e5" stroke="#dcdad4" stroke-width="1.6" stroke-linejoin="round"/>
+
+    <text x="832" y="148" fill="#74746c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" letter-spacing="1.4">CONTENTS</text>
+    <rect x="832" y="166" width="154" height="10" rx="3" fill="#21211e"/>
+    <rect x="832" y="196" width="188" height="8" rx="3" fill="#dcdad4"/>
+    <rect x="832" y="216" width="166" height="8" rx="3" fill="#dcdad4"/>
+    <rect x="832" y="236" width="180" height="8" rx="3" fill="#dcdad4"/>
+    <rect x="832" y="260" width="122" height="12" rx="3" fill="#f5dc7a"/>
+    <rect x="832" y="284" width="158" height="8" rx="3" fill="#dcdad4"/>
+    <text x="1040" y="290" text-anchor="end" fill="#74746c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">1 / 2</text>
+  </g>
+</svg>
